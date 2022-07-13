@@ -1,18 +1,29 @@
 The following documents the process for installing BAW standalone on a customer hybrid environment running Openshift.
 
-### Customer environment
+### **Customer environment**
 
 The customer was running Openshift in a shared environment that was provisioned via Openstack.
 
-<ENV BACKGROUND HERE>
+OCP version: 4.8.x
+Number of worker nodes was set to 2 via node selector tag.
 
-### Requirements
+### **Requirements**
 
 BAW Standalone needed to run in a dedicated namespace. Customer also required the reuse of the existing certificate manager that was already running on the cluster. It was community edition that the customer upgraded to 1.7.1.
 
 Customer requested an airgapped installation at first and configured Artifactory on an external vm to act as a docker proxy. 
 
-### BAW Standalone for Openshift requirements
+### **BAW Standalone for Openshift requirements**
 
 1. Must have required databases available and configured. This can be DB2, Oracle, etc. Customer in our case is using Oracle.
 2. LDAP for authentication. Can also be OpenLDAP, IBM SDS, or Active Directory. Customer in our case is using Active Directory.
+
+### **Steps followed to install BAW Standalone into client environment**
+
+1. Customer configured an external VM running linux and installed the following tools:
+    - kubectl
+    - oc
+    - podman
+    - yq
+2. Downloaded the CASE archive file for BAW standalone from https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cs-bawautomation/2.2.5
+3. On OCP, a new project was created dedicated to BAW standalone and customer user was set to be admin for the project.
