@@ -27,3 +27,25 @@ Customer requested an airgapped installation at first and configured Artifactory
     - yq
 2. Downloaded the CASE archive file for BAW standalone from https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cs-bawautomation/2.2.5
 3. On OCP, a new project was created dedicated to BAW standalone and customer user was set to be admin for the project.
+
+### **Installation process**
+
+Extract the file `ibm-cs-bawautomation-2.2.5.tgz` somewhere
+
+```
+cd ibm-cs-bawautomation/inventory/cp4aOperatorSdk/files/deploy/crs/
+
+tar xvf 21.0.3-IF009.tar
+
+cd cert-kubernetes/scripts
+
+./cp4a-clusteradmin-setup.sh baw
+```
+
+Answer the relevant install questions and set the namespace to be the dedicated customer namespace as previously defined on OCP.
+
+This installs the ibm-cp4a-operator in that namespace.
+
+### **Updating the CR**
+
+The customer had a previously defined CR to use for deployment as they had previously deployed CP4BA on ICP.
