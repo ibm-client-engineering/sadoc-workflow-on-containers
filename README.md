@@ -31,6 +31,8 @@ Customer requested an airgapped installation at first and configured Artifactory
 
 ### **Installation process**
 
+Some information comes from https://github.ibm.com/matthias-benda-ibm/tech-log/tree/master/cp4a/baw21.0.3-IKS
+
 ### **Creating an LDAP container**
 
 This does not reflect what was running in the customer environment. Rather this was a utility container running openldap that we spun up in order to test the installation of BAW Standalone in a separate env.
@@ -85,7 +87,67 @@ Our ldap service should be available on openldap-service.ldap at ports 389 and 6
 
 ### **Install DB2**
 
-To be filled out
+#### Download DB2 product sources
+
+Download the following packages for DB2 (internally from IBM Internal DSW Downloads or externally from Passport Advantage):
+
+* IBM DB2 Advanced Workgroup Server Edition Server Restricted Use V11.1 for Linux on AMD64 and Intel EM64T systems (x64) Multilingual (CNB8FML)
+* IBM DB2 Advanced Workgroup Server Edition Restricted Use Activation V11.1 for Linux, UNIX and Windows Multilingual (CNB21ML)
+* The latest [DB2 FixPack](https://www.ibm.com/support/pages/download-db2-fix-packs-version-db2-linux-unix-and-windows)
+
+Conntect to the server (as root) and create a directory to store the sources:
+
+```
+mkdir ~/install_sources
+```
+
+Transfer (via SCP) the packages downloaded to the new directory and extract them there. If `unzip` is not installed, install it using `yum install unzip`.
+
+```
+cd  ~/install_sources
+tar xzf DB2_AWSE_REST_Svr_11.1_Lnx_86-64.tar.gz
+unzip DB2_AWSE_Restricted_Activation_11.1.zip
+mkdir db2fp
+tar xzf v11.1.4fp5_linuxx64_server_t.tar.gz -C db2fp
+```
+
+#### Install DB2
+
+```shell
+#install prereqs
+yum install pam.i686 libaio gtk2.i686 libXtst.i686 libstdc++.so.6 ksh binutils
+
+#install base version
+cd ~/install_sources/server_awse_o/
+./db2_install -b /opt/ibm/db2/V11.1 -p server -n
+
+#add licence
+/opt/ibm/db2/V11.1/adm/db2licm -a ~/install_sources/awse_o/db2/license/db2awse_o.lic
+
+#install fixpack
+cd ~/install_sources/db2fp/server_t
+./installFixPack -b /opt/ibm/db2/V11.1 -p /opt/ibm/db2/V11.1
+```
+
+#### Create Instance for BAW
+
+```shell
+groupadd db2baw
+useradd -g db2baw -d /home/bawinst bawinst
+passwd bawinst
+useradd -g db2baw -d /home/bawfenc bawfenc
+passwd bawfenc
+
+/opt/ibm/db2/V11.1/instance/db2icrt -a SERVER -s ese -p 50000 -u bawfenc bawinst
+
+su - bawinst
+
+db2 update dbm cfg using SVCENAME db2c_bawinst
+
+db2iauto -on bawinst
+db2start
+exit
+```
 
 ### **BAW Standalone Installation**
 
