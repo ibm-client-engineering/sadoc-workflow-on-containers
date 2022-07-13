@@ -31,6 +31,64 @@ Customer requested an airgapped installation at first and configured Artifactory
 
 ### **Installation process**
 
+### **Creating an LDAP container**
+
+This does not reflect what was running in the customer environment. Rather this was a utility container running openldap that we spun up in order to test the installation of BAW Standalone in a separate env.
+
+The exact instructions for creating an openldap pod are documented here:
+
+https://github.ibm.com/kramerro/openldap-on-ocp
+
+Clone the above repo somewhere.
+
+Login to your OCP cluster with the `oc` client and create the following service account and policy settings:
+```
+oc create serviceaccount openldap -n <CUSTOMPROJECTNAME>
+oc adm policy add-scc-to-user privileged system:serviceaccount:<CUSTOMPROJECTNAME>:openldap
+oc adm policy add-scc-to-user anyuid system:serviceaccount:<CUSTOMPROJECTNAME>:openldap
+```
+
+Go into the repo you cloned above and set the `namespace:` in the following files to match your project name:
+
+- `createimagestream.yaml`
+- `buildconfig.yaml`
+- `ldap-service.yaml`
+
+In `ldap-deployment.yaml` you'll need to modify the `image:` entry to point to your correct namespace:
+
+```
+image: image-registry.openshift-image-registry.svc:5000/<CUSTOMPROJECTNAME>/openldap
+
+```
+
+Now create the image stream
+
+```
+oc create -f createimagestream.yaml
+```
+Kick off the custom build of the ldap image
+
+```
+oc start-build openldap -n <CUSTOMPROJECTNAME>
+```
+Now deploy an ldap instance
+```
+oc create -f ldap-deployment.yaml -n <CUSTOMPROJECTNAME>
+```
+Deploy an LDAP service
+
+```
+oc create -f ldap-service.yaml -n <CUSTOMPROJECTNAME>
+```
+
+Our ldap service should be available on openldap-service.ldap at ports 389 and 636. It should also have the necessary users for the baw installation.
+
+### **Install DB2**
+
+To be filled out
+
+### **BAW Standalone Installation**
+
 Extract the file `ibm-cs-bawautomation-2.2.5.tgz` somewhere
 
 ```
