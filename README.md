@@ -4,14 +4,15 @@ The following documents the process for installing BAW standalone on a customer 
 
 The customer was running Openshift in a shared environment that was provisioned via Openstack.
 
-OCP version: 4.8.x
-Number of worker nodes was set to 2 via node selector tag.
+- OCP version: 4.8.x
+- Number of worker nodes was set to 2 via node selector tag.
+- Customer was using manila for file storage
 
 ### **Requirements**
 
 BAW Standalone needed to run in a dedicated namespace. Customer also required the reuse of the existing certificate manager that was already running on the cluster. It was community edition that the customer upgraded to 1.7.1.
 
-Customer requested an airgapped installation at first and configured Artifactory on an external vm to act as a docker proxy. 
+Customer requested an airgapped installation at first and configured Artifactory on an external vm to act as a docker proxy. This was then configured in OCP with an imagecontentpolicy setting.
 
 ### **BAW Standalone for Openshift requirements**
 
