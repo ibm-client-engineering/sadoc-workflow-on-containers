@@ -230,7 +230,29 @@ The default CR is found in:
 ```
 ibm-cs-bawautomation/inventory/cp4aOperatorSdk/files/deploy/crs/cert-kubernetes/descriptors/patterns/ibm_cp4a_cr_production_FC_workflow-standalone.yaml
 ```
-The Customer had updated the required 103 fields in this document to reflect their existing environment. After this is all done, customer applied the CR with the following command:
+
+In order to properly port over the updated CR, we made sure to verify that the following settings were correct:
+
+```
+    ## For ROKS, this is used to enable the creation of ingresses. The default value is "false", which routes will be created.
+    sc_ingress_enable: false
+```
+And for each component:
+```
+    service_type: Route
+```
+
+Since we were bound to use the Docker proxy set up in Artifactory, we also set the image repo path accordingly per component. This is the path for `dba-etcd` as an example:
+
+```
+    images:
+      pull_policy: IfNotPresent
+      resource_registry:
+        repository: <ARTIFACTORYURL>/cp/cp4a/aae/dba-etcd
+        tag: 21.0.3-IF008
+```
+
+The Customer completed verifying and updating the required fields in the CR to reflect their existing environment. After this is all done, customer applied the CR with the following command:
 
 ```
 oc apply -f ibm_cp4a_cr_production_FC_workflow-standalone.yaml
