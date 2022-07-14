@@ -8,6 +8,14 @@ The customer was running Openshift in a shared environment that was provisioned 
 - Number of worker nodes was set to 2 via node selector tag.
 - Customer was using manila for file storage
 
+### **Challenges we encountered**
+
+- Airgapped installation - Customer wanted to test running an airgapped installation onto OCP
+- NetApp storage - There were issues using NetApp storage insofar as volumes being provisioned but not being available
+- Cert Manager - customer was running an older version of the community edition cert manager
+- Other storage issues - mostly centered around opening of ports to make services available to the pods
+- Oracle driver - As per the IBM documentation, you needed to add the `ojdbc8.jar` file to the operator. But you also needed to copy over the full instantclient installation as well. 
+
 ### **Requirements**
 
 BAW Standalone needed to run in a dedicated namespace. Customer also required the reuse of the existing certificate manager that was already running on the cluster. It was community edition that the customer upgraded to 1.7.1.
