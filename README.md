@@ -175,6 +175,34 @@ Answer the relevant install questions and set the namespace to be the dedicated 
 
 This installs the ibm-cp4a-operator in that namespace.
 
+### **Required Secrets**
+
+The following secrets were required to be created for that custom namespace:
+- ibm-ban-secret
+- ibm-baw-wc-secret
+- ibm-baw-wfs-server-db-secret
+- ibm-dba-ums-secret
+- ibm-fncm-secret
+- ldap-bind-secret
+- rr-admin-secret
+- ibm-iaws-shared-key-secret
+- workspace-aae-app-engine-admin-secret
+
+
 ### **Updating the CR**
 
 The customer had a previously defined CR to use for deployment as they had previously deployed CP4BA on ICP.
+
+### **Applying the CR**
+
+The default CR is found in:
+```
+ibm-cs-bawautomation/inventory/cp4aOperatorSdk/files/deploy/crs/cert-kubernetes/descriptors/patterns/ibm_cp4a_cr_production_FC_workflow-standalone.yaml
+```
+The Customer had updated the required 103 fields in this document to reflect their existing environment. After this is all done, customer applied the CR with the following command:
+
+```
+oc apply -f ibm_cp4a_cr_production_FC_workflow-standalone.yaml 
+```
+
+This kicks off the deployment of BAW Workflow standalone on containers.
