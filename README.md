@@ -1,6 +1,34 @@
-The following documents the process for installing BAW standalone on a customer hybrid environment running Openshift.
+<h1>IBM Client Engineering - Solution Document (Draft)</h1>
 
-### **Customer environment**
+<h2>IBM Business Automation Workflow (BAW) on Containers</h2>
+<img align="right" src="https://user-images.githubusercontent.com/95059/166857681-99c92cdc-fa62-4141-b903-969bd6ec1a41.png" width="491" >
+
+- [Background and Intent](#background-and-intent)
+- [Solution Strategy](#solution-strategy)
+  - [Building Block View](#building-block-view)
+  - [Customer Environment](#customer-environment)
+  - [Challenges Encountered](#challenges-encountered)
+  - [Deployment](#deployment)
+    - [Requirements](#requirements)
+    - [BAW Standalone for OpenShift Requirements](#baw-standalone-for-openshift-requirements)
+    - [Steps followed to install BAW Standalone into client environment](#steps-followed-to-install-baw-standalone-into-client-environment)
+    - [Installation process](#installation-process)
+    - [Creating an LDAP container](#creating-an-ldap-container)
+    - [**Install DB2**](#install-db2)
+      - [Download DB2 product sources](#download-db2-product-sources)
+      - [Install DB2](#install-db2-1)
+      - [Create Instance for BAW](#create-instance-for-baw)
+    - [BAW Standalone Installation](#baw-standalone-installation)
+    - [Updating the CR](#updating-the-cr)
+# Background and Intent
+
+The following documents the process for installing BAW standalone on a customer on-premis environment running OpenShift in a shared cluster.
+
+# Solution Strategy
+
+## Building Block View
+[Diagram]
+## Customer Environment
 
 The customer was running Openshift in a shared environment that was provisioned via Openstack.
 
@@ -8,26 +36,27 @@ The customer was running Openshift in a shared environment that was provisioned 
 - Number of worker nodes was set to 2 via node selector tag.
 - Customer was using manila for file storage
 
-### **Challenges we encountered**
+## Challenges Encountered
 
-- Airgapped installation - Customer wanted to test running an airgapped installation onto OCP
-- NetApp storage - There were issues using NetApp storage insofar as volumes being provisioned but not being available
-- Cert Manager - customer was running an older version of the community edition cert manager
-- Other storage issues - mostly centered around opening of ports to make services available to the pods
-- Oracle driver - As per the IBM documentation, you needed to add the `ojdbc8.jar` file to the operator. But you also needed to copy over the full instantclient installation as well. 
+- **Airgapped installation** - Customer wanted to test running an airgapped installation onto OCP that leveraged their own Artifactory instance for images.
+- **NetApp Storage Issues** - There were issues using NetApp storage insofar as volumes being provisioned but not being available
+- **CertManager** - customer was running an older version of the community edition cert manager
+- **Other Storage Issues** - Mostly centered around opening of ports to make services available to the pods
+- **Oracle Database Drivers** - As per the IBM documentation, you needed to add the `ojdbc8.jar` file to the operator. But you also needed to copy over the full instantclient installation as well.
 
-### **Requirements**
+## Deployment
+### Requirements
 
 BAW Standalone needed to run in a dedicated namespace. Customer also required the reuse of the existing certificate manager that was already running on the cluster. It was community edition that the customer upgraded to 1.7.1.
 
 Customer requested an airgapped installation at first and configured Artifactory on an external vm to act as a docker proxy. This was then configured in OCP with an imagecontentpolicy setting.
 
-### **BAW Standalone for Openshift requirements**
+### BAW Standalone for OpenShift Requirements
 
 1. Must have required databases available and configured. This can be DB2, Oracle, etc. Customer in our case is using Oracle.
 2. LDAP for authentication. Can also be OpenLDAP, IBM SDS, or Active Directory. Customer in our case is using Active Directory.
 
-### **Steps followed to install BAW Standalone into client environment**
+### Steps followed to install BAW Standalone into client environment
 
 1. Customer configured an external VM running linux and installed the following tools:
     - kubectl
@@ -37,11 +66,11 @@ Customer requested an airgapped installation at first and configured Artifactory
 2. Downloaded the CASE archive file for BAW standalone from https://github.com/IBM/cloud-pak/tree/master/repo/case/ibm-cs-bawautomation/2.2.5
 3. On OCP, a new project was created dedicated to BAW standalone and customer user was set to be admin for the project.
 
-### **Installation process**
+### Installation process
 
 Some information comes from https://github.ibm.com/matthias-benda-ibm/tech-log/tree/master/cp4a/baw21.0.3-IKS
 
-### **Creating an LDAP container**
+### Creating an LDAP container
 
 This does not reflect what was running in the customer environment. Rather this was a utility container running openldap that we spun up in order to test the installation of BAW Standalone in a separate env.
 
@@ -157,7 +186,7 @@ db2start
 exit
 ```
 
-### **BAW Standalone Installation**
+### BAW Standalone Installation
 
 Extract the file `ibm-cs-bawautomation-2.2.5.tgz` somewhere
 
@@ -175,6 +204,6 @@ Answer the relevant install questions and set the namespace to be the dedicated 
 
 This installs the ibm-cp4a-operator in that namespace.
 
-### **Updating the CR**
+### Updating the CR
 
 The customer had a previously defined CR to use for deployment as they had previously deployed CP4BA on ICP.
